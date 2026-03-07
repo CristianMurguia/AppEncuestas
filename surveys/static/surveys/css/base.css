@@ -1,0 +1,22 @@
+:root { --primary: #6c63ff; }
+
+body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+
+.card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: #5a52d5; border-color: #5a52d5; }
+
+.sidebar { background: linear-gradient(135deg, #6c63ff, #483d8b); min-height: 100vh; width: 240px; min-width: 240px; }
+.sidebar a { color: rgba(255,255,255,0.85); text-decoration: none; padding: 10px 16px; display: block; border-radius: 8px; transition: all .2s; }
+.sidebar a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.sidebar hr { border-color: rgba(255,255,255,.2); }
+
+.brand { color: #fff; font-weight: 700; font-size: 1.3rem; padding: 0 8px; display: block; margin-bottom: 1rem; }
+
+.topnav { background: linear-gradient(135deg, #6c63ff, #483d8b); padding: 1rem; }
+.topnav a { color: #fff; font-weight: 700; font-size: 1.3rem; text-decoration: none; }
+
+.badge-status-active { background: #d1fae5; color: #065f46; border-radius: 6px; padding: 3px 10px; }
+.badge-status-draft  { background: #fef3c7; color: #92400e; border-radius: 6px; padding: 3px 10px; }
+.badge-status-closed { background: #fee2e2; color: #991b1b; border-radius: 6px; padding: 3px 10px; }

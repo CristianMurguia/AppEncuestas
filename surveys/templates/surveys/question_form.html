@@ -1,0 +1,68 @@
+{% extends 'surveys/base.html' %}
+{% block title %}{{ action }} Pregunta{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card p-4">
+      <h4 class="fw-bold mb-1">{{ action }} Pregunta</h4>
+      <p class="text-muted mb-4">Encuesta: <strong>{{ survey.title }}</strong></p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Texto de la pregunta *</label>
+          {{ form.text }}
+        </div>
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">Tipo</label>
+            {{ form.question_type }}
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">Orden</label>
+            {{ form.order }}
+          </div>
+          <div class="col-md-4 mb-3 d-flex align-items-end">
+            <div class="form-check">
+              {{ form.required }}
+              <label class="form-check-label">Obligatoria</label>
+            </div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Texto de ayuda</label>
+          {{ form.help_text }}
+        </div>
+
+        <div id="choices-section">
+          <h6 class="fw-bold mb-3">Opciones de respuesta <small class="text-muted fw-normal">(para radio, checkbox, select)</small></h6>
+          {{ formset.management_form }}
+          {% for choice_form in formset %}
+            <div class="row g-2 mb-2 choice-row">
+              {% for field in choice_form %}
+                {% if field.name != 'DELETE' %}
+                  <div class="col">{{ field }}</div>
+                {% else %}
+                  <div class="col-auto d-flex align-items-center">
+                    <div class="form-check">
+                      {{ field }}
+                      <label class="form-check-label text-danger small">Eliminar</label>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+              {{ choice_form.id }}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-2"></i>Guardar
+          </button>
+          <a href="{% url 'survey_edit' survey.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

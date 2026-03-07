@@ -1,0 +1,99 @@
+{% extends 'surveys/base.html' %}
+{% block title %}Panel de Control{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-0">Hola, {{ user.username }} 👋</h2>
+    <p class="text-muted mb-0">Gestiona tus encuestas desde aquí</p>
+  </div>
+  <a href="{% url 'survey_create' %}" class="btn btn-primary">
+    <i class="fas fa-plus me-2"></i>Nueva Encuesta
+  </a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card p-3">
+      <div class="text-muted small">Total Encuestas</div>
+      <div class="fs-2 fw-bold">{{ stats.total }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card p-3" style="border-color:#10b981">
+      <div class="text-muted small">Activas</div>
+      <div class="fs-2 fw-bold text-success">{{ stats.active }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card p-3" style="border-color:#f59e0b">
+      <div class="text-muted small">Borradores</div>
+      <div class="fs-2 fw-bold text-warning">{{ stats.draft }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card p-3" style="border-color:#3b82f6">
+      <div class="text-muted small">Total Respuestas</div>
+      <div class="fs-2 fw-bold text-primary">{{ stats.total_responses }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="ps-4">Encuesta</th>
+          <th>Estado</th>
+          <th>Respuestas</th>
+          <th>Creada</th>
+          <th class="pe-4">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for survey in surveys %}
+        <tr>
+          <td class="ps-4 fw-semibold">{{ survey.title }}</td>
+          <td>
+            <span class="badge badge-status-{{ survey.status }} px-2 py-1">
+              {{ survey.get_status_display }}
+            </span>
+          </td>
+          <td><i class="fas fa-users text-muted me-1"></i>{{ survey.response_count }}</td>
+          <td class="text-muted small">{{ survey.created_at|date:"d M Y" }}</td>
+          <td class="pe-4">
+            <a href="{% url 'survey_edit' survey.pk %}" class="btn btn-sm btn-outline-secondary me-1">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'survey_results' survey.pk %}" class="btn btn-sm btn-outline-primary me-1">
+              <i class="fas fa-chart-bar"></i>
+            </a>
+            <button onclick="copyLink('{{ request.scheme }}://{{ request.get_host }}{% url "survey_take" survey.access_token %}')"
+                    class="btn btn-sm btn-outline-success me-1" title="Copiar enlace">
+              <i class="fas fa-link"></i>
+            </button>
+            <a href="{% url 'survey_delete' survey.pk %}" class="btn btn-sm btn-outline-danger">
+              <i class="fas fa-trash"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-5 text-muted">
+          <i class="fas fa-poll fa-3x mb-3 d-block"></i>
+          No tienes encuestas aún. <a href="{% url 'survey_create' %}">¡Crea la primera!</a>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    alert('¡Enlace copiado al portapapeles!\n' + url);
+  });
+}
+</script>
+{% endblock %}

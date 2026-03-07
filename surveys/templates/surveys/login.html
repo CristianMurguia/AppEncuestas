@@ -1,0 +1,30 @@
+{% extends 'surveys/base.html' %}
+{% block title %}Iniciar Sesión{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card p-5">
+      <div class="text-center mb-4">
+        <i class="fas fa-poll fa-3x text-primary mb-2"></i>
+        <h3 class="fw-bold">SurveyApp</h3>
+        <p class="text-muted">Inicia sesión para continuar</p>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ field.label }}</label>
+            <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}"
+                   class="form-control form-control-lg" {% if field.field.required %}required{% endif %}>
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-lg w-100 mt-2">
+          <i class="fas fa-sign-in-alt me-2"></i>Entrar
+        </button>
+      </form>
+      <hr>
+      <p class="text-center mb-0">¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

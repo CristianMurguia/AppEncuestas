@@ -1,0 +1,85 @@
+{% extends 'surveys/base.html' %}
+{% block title %}Editar: {{ survey.title }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="fw-bold mb-0">{{ survey.title }}</h3>
+    <small class="text-muted">Enlace: 
+      <code>{{ request.scheme }}://{{ request.get_host }}{% url "survey_take" survey.access_token %}</code>
+      <button onclick="copyLink()" class="btn btn-sm btn-link p-0 ms-1"><i class="fas fa-copy"></i></button>
+    </small>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'survey_results' survey.pk %}" class="btn btn-outline-primary">
+      <i class="fas fa-chart-bar me-1"></i>Ver Resultados
+    </a>
+    <a href="{% url 'question_add' survey.pk %}" class="btn btn-primary">
+      <i class="fas fa-plus me-1"></i>Agregar Pregunta
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card p-4">
+      <h5 class="fw-bold mb-3">Configuración</h5>
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 mt-2">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card p-4">
+      <h5 class="fw-bold mb-3">Preguntas <span class="badge bg-secondary">{{ questions.count }}</span></h5>
+      {% for question in questions %}
+      <div class="border rounded-3 p-3 mb-3 bg-light">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <span class="badge bg-primary-subtle text-primary me-2">{{ question.get_question_type_display }}</span>
+            {% if question.required %}<span class="badge bg-danger-subtle text-danger">Requerida</span>{% endif %}
+            <p class="fw-semibold mb-1 mt-1">{{ forloop.counter }}. {{ question.text }}</p>
+            {% if question.choices.all %}
+              <ul class="list-unstyled ms-3 mb-0 small text-muted">
+                {% for choice in question.choices.all %}
+                  <li><i class="fas fa-circle-dot me-1 small"></i>{{ choice.text }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          <div class="d-flex gap-1">
+            <a href="{% url 'question_edit' question.pk %}" class="btn btn-sm btn-outline-secondary">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'question_delete' question.pk %}" class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('¿Eliminar esta pregunta?')">
+              <i class="fas fa-trash"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center py-4 text-muted">
+        <i class="fas fa-question-circle fa-2x mb-2 d-block"></i>
+        No hay preguntas aún. <a href="{% url 'question_add' survey.pk %}">Agrega la primera</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function copyLink() {
+  const url = '{{ request.scheme }}://{{ request.get_host }}{% url "survey_take" survey.access_token %}';
+  navigator.clipboard.writeText(url).then(() => alert('¡Enlace copiado!'));
+}
+</script>
+{% endblock %}
