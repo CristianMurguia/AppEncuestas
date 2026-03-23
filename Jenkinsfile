@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = 'C:\\Users\\dimcg\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe'
+    }
+
     stages {
 
         stage('Clonar repositorio') {
@@ -12,19 +16,19 @@ pipeline {
 
         stage('Instalar dependencias') {
             steps {
-                bat 'pip install django'
+                bat '"%PYTHON%" -m pip install django'
             }
         }
 
         stage('Verificar errores Django') {
             steps {
-                bat 'python manage.py check'
+                bat '"%PYTHON%" manage.py check'
             }
         }
 
         stage('Correr tests') {
             steps {
-                bat 'python manage.py test surveys --verbosity=2'
+                bat '"%PYTHON%" manage.py test surveys --verbosity=2'
             }
         }
 
