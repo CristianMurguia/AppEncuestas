@@ -104,6 +104,7 @@ def survey_edit(request, pk):
 @login_required
 def question_add(request, survey_pk):
     survey = get_object_or_404(Survey, pk=survey_pk, owner=request.user)
+
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
