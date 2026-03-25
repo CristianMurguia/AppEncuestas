@@ -22,39 +22,39 @@
         <h2 class="fw-bold mb-0">Hola, {{ user.username }} </h2>
         <p class="text-muted mb-0">Gestiona tus encuestas desde aquí</p>
       </div>
-      <a href="{% url 'survey_create' %}" class="btn btn-primary">
+      <a href="{% url 'survey_create' %}" class="btn btn-primary shadow-sm">
         <i class="fas fa-plus me-2"></i>Nueva Encuesta
       </a>
     </div>
 
     <div class="row g-3 mb-4">
       <div class="col-md-3">
-        <div class="card p-3" style="border-left: 4px solid #6c63ff;">
+        <div class="card p-3 border-0 shadow-sm" style="border-left: 4px solid #6c63ff !important;">
           <div class="text-muted small">Total Encuestas</div>
           <div class="fs-2 fw-bold">{{ stats.total }}</div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card p-3" style="border-left: 4px solid #10b981;">
+        <div class="card p-3 border-0 shadow-sm" style="border-left: 4px solid #10b981 !important;">
           <div class="text-muted small">Activas</div>
           <div class="fs-2 fw-bold text-success">{{ stats.active }}</div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card p-3" style="border-left: 4px solid #f59e0b;">
+        <div class="card p-3 border-0 shadow-sm" style="border-left: 4px solid #f59e0b !important;">
           <div class="text-muted small">Borradores</div>
           <div class="fs-2 fw-bold text-warning">{{ stats.draft }}</div>
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card p-3" style="border-left: 4px solid #3b82f6;">
+        <div class="card p-3 border-0 shadow-sm" style="border-left: 4px solid #3b82f6 !important;">
           <div class="text-muted small">Total Respuestas</div>
           <div class="fs-2 fw-bold text-primary">{{ stats.total_responses }}</div>
         </div>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0 shadow-sm">
       <div class="card-body p-0">
         <table class="table table-hover mb-0 align-middle">
           <thead class="table-light">
@@ -63,7 +63,7 @@
               <th>Estado</th>
               <th>Respuestas</th>
               <th>Creada</th>
-              <th class="pe-4">Acciones</th>
+              <th class="pe-4 text-end">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -77,19 +77,29 @@
               </td>
               <td><i class="fas fa-users text-muted me-1"></i>{{ survey.response_count }}</td>
               <td class="text-muted small">{{ survey.created_at|date:"d M Y" }}</td>
-              <td class="pe-4">
-                <a href="{% url 'survey_edit' survey.pk %}" class="btn btn-sm btn-outline-secondary me-1">
+              <td class="pe-4 text-end">
+                <a href="{% url 'survey_edit' survey.pk %}" 
+                   class="btn btn-sm btn-outline-secondary me-1" 
+                   data-bs-toggle="tooltip" title="Editar encuesta">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a href="{% url 'survey_results' survey.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                
+                <a href="{% url 'survey_results' survey.pk %}" 
+                   class="btn btn-sm btn-outline-primary me-1" 
+                   data-bs-toggle="tooltip" title="Ver resultados y análisis">
                   <i class="fas fa-chart-bar"></i>
                 </a>
+
                 <button data-url="{{ request.scheme }}://{{ request.get_host }}{% url 'survey_take' survey.access_token %}"
                         onclick="copyLink(this.dataset.url)"
-                        class="btn btn-sm btn-outline-success me-1" title="Copiar enlace">
+                        class="btn btn-sm btn-outline-success me-1" 
+                        data-bs-toggle="tooltip" title="Copiar enlace para compartir">
                   <i class="fas fa-link"></i>
                 </button>
-                <a href="{% url 'survey_delete' survey.pk %}" class="btn btn-sm btn-outline-danger">
+
+                <a href="{% url 'survey_delete' survey.pk %}" 
+                   class="btn btn-sm btn-outline-danger" 
+                   data-bs-toggle="tooltip" title="Eliminar encuesta">
                   <i class="fas fa-trash"></i>
                 </a>
               </td>
@@ -106,17 +116,26 @@
         </table>
       </div>
     </div>
-
   </main>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function copyLink(url) {
-  navigator.clipboard.writeText(url).then(() => {
-    alert('¡Enlace copiado!\n' + url);
+  // Inicialización de Tooltips de Bootstrap
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
   });
-}
+
+  // Función para copiar enlace mejorada
+  function copyLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      // Opcional: Podrías usar un Toast de Bootstrap en lugar de un alert para que sea más elegante
+      alert('¡Enlace copiado al portapapeles!');
+    });
+  }
 </script>
 {% endblock %}
