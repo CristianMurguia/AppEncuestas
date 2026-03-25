@@ -129,9 +129,11 @@
                 <a href="{% url 'survey_results' survey.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Resultados">
                   <i class="fas fa-chart-bar"></i>
                 </a>
+
                 <button data-url="{{ request.scheme }}://{{ request.get_host }}{% url 'survey_take' survey.access_token %}"
                         onclick="copyLink(this.dataset.url)"
-                        class="btn btn-sm btn-outline-success me-1" title="Copiar enlace">
+                        class="btn btn-sm btn-outline-success me-1" 
+                        data-bs-toggle="tooltip" title="Copiar enlace para compartir">
                   <i class="fas fa-link"></i>
                 </button>
                 <a href="{% url 'survey_delete' survey.pk %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
@@ -154,17 +156,26 @@
         </table>
       </div>
     </div>
-
   </main>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function copyLink(url) {
-  navigator.clipboard.writeText(url).then(() => {
-    alert('¡Enlace copiado!\n' + url);
+  // Inicialización de Tooltips de Bootstrap
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
   });
-}
+
+  // Función para copiar enlace mejorada
+  function copyLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      // Opcional: Podrías usar un Toast de Bootstrap en lugar de un alert para que sea más elegante
+      alert('¡Enlace copiado al portapapeles!');
+    });
+  }
 </script>
 {% endblock %}

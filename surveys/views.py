@@ -106,27 +106,33 @@ def question_add(request, survey_pk):
     survey = get_object_or_404(Survey, pk=survey_pk, owner=request.user)
 
     if request.method == 'POST':
-        form = QuestionForm(request.POST)
         if form.is_valid():
             question = form.save(commit=False)
             question.survey = survey
             question.save()
+            
+            # Re-vinculamos el formset a la instancia guardada
             formset = ChoiceFormSet(request.POST, instance=question)
             if formset.is_valid():
                 formset.save()
-            messages.success(request, 'Pregunta agregada.')
-            return redirect('survey_edit', pk=survey_pk)
-    else:
-        form = QuestionForm()
-        formset = ChoiceFormSet()
+                messages.success(request, 'Pregunta agregada correctamente.')
+                return redirect('survey_edit', pk=survey_pk)
+            else:
+                # Si el formset falla, la pregunta ya se guardó, pero avisamos del error
+                messages.error(request, 'Error en las opciones de la pregunta.')
+    
     return render(request, 'surveys/question_form.html', {
-        'form': form, 'formset': formset, 'survey': survey, 'action': 'Agregar'
+        'form': form, 
+        'formset': formset, 
+        'survey': survey, 
+        'action': 'Agregar'
     })
 
 
 @login_required
 def question_edit(request, pk):
     question = get_object_or_404(Question, pk=pk, survey__owner=request.user)
+    
     if request.method == 'POST':
         form = QuestionForm(request.POST, instance=question)
         formset = ChoiceFormSet(request.POST, instance=question)
@@ -138,8 +144,12 @@ def question_edit(request, pk):
     else:
         form = QuestionForm(instance=question)
         formset = ChoiceFormSet(instance=question)
+        
     return render(request, 'surveys/question_form.html', {
-        'form': form, 'formset': formset, 'survey': question.survey, 'action': 'Editar'
+        'form': form, 
+        'formset': formset, 
+        'survey': question.survey, 
+        'action': 'Editar'
     })
 
 

@@ -1,21 +1,35 @@
 {% extends 'surveys/base.html' %}
 {% block title %}Nueva Encuesta{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-7">
-    <div class="card p-4">
-      <h3 class="fw-bold mb-1"><i class="fas fa-plus-circle text-primary me-2"></i>Nueva Encuesta</h3>
+    
+    <div class="mb-3">
+      <a href="{% url 'dashboard' %}" class="text-decoration-none text-muted">
+        <i class="fas fa-chevron-left me-1"></i> Volver al Panel
+      </a>
+    </div>
+
+    <div class="card p-4 shadow-sm" style="border-radius: 15px; border: none;">
+      <h3 class="fw-bold mb-1">
+        <i class="fas fa-plus-circle text-primary me-2"></i>Nueva Encuesta
+      </h3>
       <p class="text-muted mb-4">Completa la información básica</p>
+      
       <form method="post">
         {% csrf_token %}
+        
         <div class="mb-3">
           <label class="form-label fw-semibold">Título *</label>
           {{ form.title }}
         </div>
+
         <div class="mb-3">
           <label class="form-label fw-semibold">Descripción</label>
           {{ form.description }}
         </div>
+
         <div class="row">
           <div class="col-md-4 mb-3">
             <label class="form-label fw-semibold">Estado</label>
@@ -30,19 +44,24 @@
             {{ form.end_date }}
           </div>
         </div>
+
         <div class="mb-3 form-check">
           {{ form.requires_login }}
-          <label class="form-check-label">Requiere login</label>
+          <label class="form-check-label ms-2">Requiere login</label>
         </div>
+
         <div class="mb-4 form-check">
           {{ form.allow_multiple_responses }}
-          <label class="form-check-label">Permitir múltiples respuestas</label>
+          <label class="form-check-label ms-2">Permitir múltiples respuestas</label>
         </div>
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-arrow-right me-2"></i>Crear y agregar preguntas
+
+        <hr class="text-muted opacity-25">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="{% url 'dashboard' %}" class="btn btn-light px-4">Cancelar</a>
+          <button type="submit" class="btn btn-primary px-4" style="background-color: #6f42c1; border-color: #6f42c1;">
+            <i class="fas fa-save me-2"></i>Crear y agregar preguntas
           </button>
-          <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancelar</a>
         </div>
       </form>
     </div>

@@ -1,19 +1,32 @@
 {% extends 'surveys/base.html' %}
 {% block title %}Editar: {{ survey.title }}{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h3 class="fw-bold mb-0">{{ survey.title }}</h3>
-    <small class="text-muted">Enlace: 
-      <code>{{ request.scheme }}://{{ request.get_host }}{% url "survey_take" survey.access_token %}</code>
-      <button onclick="copyLink()" class="btn btn-sm btn-link p-0 ms-1"><i class="fas fa-copy"></i></button>
-    </small>
-  </div>
-  <div class="d-flex gap-2">
-    <a href="{% url 'survey_results' survey.pk %}" class="btn btn-outline-primary">
-      <i class="fas fa-chart-bar me-1"></i>Ver Resultados
+<div class="mb-3">
+    <a href="{% url 'dashboard' %}" class="text-decoration-none text-muted small">
+        <i class="fas fa-chevron-left me-1"></i> Volver al Panel
     </a>
-    <a href="{% url 'question_add' survey.pk %}" class="btn btn-primary">
+</div>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h3 class="fw-bold mb-1">{{ survey.title }}</h3>
+    <div class="d-flex align-items-center">
+      <small class="text-muted me-2">Enlace:</small>
+      <code class="small text-primary bg-light px-2 py-1 rounded">
+        {{ request.scheme }}://{{ request.get_host }}{% url "survey_take" survey.access_token %}
+      </code>
+      <button onclick="copyLink()" class="btn btn-sm btn-link text-decoration-none p-0 ms-2" title="Copiar enlace">
+        <i class="fas fa-copy"></i>
+      </button>
+    </div>
+  </div>
+  
+  <div class="d-flex gap-2">
+    <a href="{% url 'survey_results' survey.pk %}" class="btn btn-outline-primary shadow-sm">
+      <i class="fas fa-chart-bar me-1"></i>Resultados
+    </a>
+    <a href="{% url 'question_add' survey.pk %}" class="btn btn-primary shadow-sm" style="background-color: #6f42c1; border-color: #6f42c1;">
       <i class="fas fa-plus me-1"></i>Agregar Pregunta
     </a>
   </div>
@@ -21,44 +34,55 @@
 
 <div class="row g-4">
   <div class="col-lg-4">
-    <div class="card p-4">
-      <h5 class="fw-bold mb-3">Configuración</h5>
+    <div class="card border-0 shadow-sm p-4" style="border-radius: 15px;">
+      <h5 class="fw-bold mb-3"><i class="fas fa-cog text-muted me-2"></i>Configuración</h5>
       <form method="post">
         {% csrf_token %}
         {% for field in form %}
-          <div class="mb-2">
+          <div class="mb-3">
             <label class="form-label small fw-semibold">{{ field.label }}</label>
             {{ field }}
+            {% if field.help_text %}
+              <div class="form-text small">{{ field.help_text }}</div>
+            {% endif %}
           </div>
         {% endfor %}
-        <button type="submit" class="btn btn-primary w-100 mt-2">Guardar Cambios</button>
+        <button type="submit" class="btn btn-primary w-100 mt-2 shadow-sm" style="background-color: #6f42c1; border-color: #6f42c1;">
+          <i class="fas fa-save me-2"></i>Guardar Cambios
+        </button>
       </form>
     </div>
   </div>
 
   <div class="col-lg-8">
-    <div class="card p-4">
-      <h5 class="fw-bold mb-3">Preguntas <span class="badge bg-secondary">{{ questions.count }}</span></h5>
+    <div class="card border-0 shadow-sm p-4" style="border-radius: 15px;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Preguntas</h5>
+        <span class="badge rounded-pill bg-primary" style="background-color: #6f42c1 !important;">
+          {{ questions.count }}
+        </span>
+      </div>
+
       {% for question in questions %}
-      <div class="border rounded-3 p-3 mb-3 bg-light">
+      <div class="border-0 rounded-3 p-3 mb-3" style="background-color: #f8f9fa;">
         <div class="d-flex justify-content-between align-items-start">
           <div>
-            <span class="badge bg-primary-subtle text-primary me-2">{{ question.get_question_type_display }}</span>
-            {% if question.required %}<span class="badge bg-danger-subtle text-danger">Requerida</span>{% endif %}
-            <p class="fw-semibold mb-1 mt-1">{{ forloop.counter }}. {{ question.text }}</p>
+            <span class="badge bg-white text-primary border me-2 small">{{ question.get_question_type_display }}</span>
+            {% if question.required %}<span class="badge bg-danger-subtle text-danger small">Requerida</span>{% endif %}
+            <p class="fw-semibold mb-1 mt-2 text-dark">{{ forloop.counter }}. {{ question.text }}</p>
             {% if question.choices.all %}
               <ul class="list-unstyled ms-3 mb-0 small text-muted">
                 {% for choice in question.choices.all %}
-                  <li><i class="fas fa-circle-dot me-1 small"></i>{{ choice.text }}</li>
+                  <li><i class="fas fa-circle-dot me-2 text-secondary" style="font-size: 8px;"></i>{{ choice.text }}</li>
                 {% endfor %}
               </ul>
             {% endif %}
           </div>
           <div class="d-flex gap-1">
-            <a href="{% url 'question_edit' question.pk %}" class="btn btn-sm btn-outline-secondary">
-              <i class="fas fa-edit"></i>
+            <a href="{% url 'question_edit' question.pk %}" class="btn btn-sm btn-light border shadow-sm">
+              <i class="fas fa-edit text-secondary"></i>
             </a>
-            <a href="{% url 'question_delete' question.pk %}" class="btn btn-sm btn-outline-danger"
+            <a href="{% url 'question_delete' question.pk %}" class="btn btn-sm btn-light border shadow-sm text-danger"
                onclick="return confirm('¿Eliminar esta pregunta?')">
               <i class="fas fa-trash"></i>
             </a>
@@ -66,20 +90,25 @@
         </div>
       </div>
       {% empty %}
-      <div class="text-center py-4 text-muted">
-        <i class="fas fa-question-circle fa-2x mb-2 d-block"></i>
-        No hay preguntas aún. <a href="{% url 'question_add' survey.pk %}">Agrega la primera</a>
+      <div class="text-center py-5 text-muted border border-dashed rounded-3">
+        <i class="fas fa-question-circle fa-3x mb-3 opacity-25"></i>
+        <p class="mb-0">No hay preguntas aún.</p>
+        <a href="{% url 'question_add' survey.pk %}" class="btn btn-sm btn-link fw-bold">Agrega la primera aquí</a>
       </div>
       {% endfor %}
     </div>
   </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
 function copyLink() {
   const url = '{{ request.scheme }}://{{ request.get_host }}{% url "survey_take" survey.access_token %}';
-  navigator.clipboard.writeText(url).then(() => alert('¡Enlace copiado!'));
+  navigator.clipboard.writeText(url).then(() => {
+    // Podrías usar un Toast de Bootstrap aquí en lugar de un alert
+    alert('¡Enlace copiado al portapapeles!');
+  });
 }
 </script>
 {% endblock %}
