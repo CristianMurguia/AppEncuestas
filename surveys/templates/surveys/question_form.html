@@ -1,23 +1,27 @@
 {% extends 'surveys/base.html' %}
 {% block title %}{{ action }} Pregunta{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-lg-8">
+  <div class="col-lg-7">
     <div class="card p-4">
       <h4 class="fw-bold mb-1">{{ action }} Pregunta</h4>
-      <p class="text-muted mb-4">Encuesta: <strong>{{ survey.title }}</strong></p>
+      <p class="text-muted mb-4 small">Encuesta: <strong>{{ survey.title }}</strong></p>
+
       <form method="post">
         {% csrf_token %}
+
         <div class="mb-3">
-          <label class="form-label fw-semibold">Texto de la pregunta *</label>
+          <label class="form-label fw-semibold">Pregunta *</label>
           {{ form.text }}
         </div>
+
         <div class="row">
-          <div class="col-md-4 mb-3">
-            <label class="form-label fw-semibold">Tipo</label>
+          <div class="col-md-5 mb-3">
+            <label class="form-label fw-semibold">Tipo de respuesta</label>
             {{ form.question_type }}
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-3 mb-3">
             <label class="form-label fw-semibold">Orden</label>
             {{ form.order }}
           </div>
@@ -28,41 +32,86 @@
             </div>
           </div>
         </div>
+
         <div class="mb-4">
           <label class="form-label fw-semibold">Texto de ayuda</label>
           {{ form.help_text }}
         </div>
 
-        <div id="choices-section">
-          <h6 class="fw-bold mb-3">Opciones de respuesta <small class="text-muted fw-normal">(para radio, checkbox, select)</small></h6>
+        <!-- Opciones de respuesta (solo para opción múltiple) -->
+        <div id="choices-section" class="mb-4" style="display:none;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-semibold mb-0">Opciones de respuesta</label>
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="agregarOpcion()">
+              <i class="fas fa-plus me-1"></i>Agregar opción
+            </button>
+          </div>
           {{ formset.management_form }}
-          {% for choice_form in formset %}
-            <div class="row g-2 mb-2 choice-row">
-              {% for field in choice_form %}
-                {% if field.name != 'DELETE' %}
-                  <div class="col">{{ field }}</div>
-                {% else %}
-                  <div class="col-auto d-flex align-items-center">
-                    <div class="form-check">
-                      {{ field }}
-                      <label class="form-check-label text-danger small">Eliminar</label>
-                    </div>
-                  </div>
-                {% endif %}
-              {% endfor %}
-              {{ choice_form.id }}
-            </div>
-          {% endfor %}
+          <div id="choices-container">
+            {% for choice_form in formset %}
+              <div class="choice-row d-flex gap-2 mb-2 align-items-center">
+                {{ choice_form.id }}
+                <input type="text" name="{{ choice_form.text.html_name }}"
+                       class="form-control" placeholder="Escribe una opción"
+                       value="{{ choice_form.text.value|default:'' }}">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarOpcion(this)">
+                  <i class="fas fa-times"></i>
+                </button>
+                <div style="display:none;">
+                  {{ choice_form.DELETE }}
+                  {{ choice_form.order }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
         </div>
 
-        <div class="d-flex gap-2 mt-4">
+        <div class="d-flex gap-2 mt-2">
           <button type="submit" class="btn btn-primary px-4">
             <i class="fas fa-save me-2"></i>Guardar
           </button>
           <a href="{% url 'survey_edit' survey.pk %}" class="btn btn-outline-secondary">Cancelar</a>
         </div>
+
       </form>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const tipoSelect = document.querySelector('[name="question_type"]');
+  const choicesSection = document.getElementById('choices-section');
+  const container = document.getElementById('choices-container');
+  let totalForms = parseInt(document.querySelector('[name="choices-TOTAL_FORMS"]')?.value || 0);
+
+  function toggleOpciones() {
+    choicesSection.style.display = tipoSelect.value === 'checkbox' ? 'block' : 'none';
+  }
+
+  tipoSelect.addEventListener('change', toggleOpciones);
+  toggleOpciones();
+
+  function agregarOpcion() {
+    const div = document.createElement('div');
+    div.className = 'choice-row d-flex gap-2 mb-2 align-items-center';
+    div.innerHTML = `
+      <input type="text" name="choices-${totalForms}-text"
+             class="form-control" placeholder="Escribe una opción">
+      <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarOpcion(this)">
+        <i class="fas fa-times"></i>
+      </button>
+      <input type="hidden" name="choices-${totalForms}-id" value="">
+      <input type="hidden" name="choices-${totalForms}-order" value="${totalForms}">
+    `;
+    container.appendChild(div);
+    totalForms++;
+    document.querySelector('[name="choices-TOTAL_FORMS"]').value = totalForms;
+  }
+
+  function eliminarOpcion(btn) {
+    btn.closest('.choice-row').remove();
+  }
+</script>
 {% endblock %}

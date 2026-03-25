@@ -104,10 +104,6 @@ def survey_edit(request, pk):
 @login_required
 def question_add(request, survey_pk):
     survey = get_object_or_404(Survey, pk=survey_pk, owner=request.user)
-    
-    # Inicializamos siempre para evitar el UnboundLocalError
-    form = QuestionForm(request.POST or None)
-    formset = ChoiceFormSet(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():
