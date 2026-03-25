@@ -12,8 +12,8 @@ class Survey(models.Model):
     ]
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='surveys')
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    title = models.CharField(max_length=50)
+    description = models.TextField(max_length=500, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     access_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     requires_login = models.BooleanField(default=False)
@@ -46,15 +46,11 @@ class Survey(models.Model):
 class Question(models.Model):
     QUESTION_TYPES = [
         ('text', 'Texto libre'),
-        ('radio', 'Opción única'),
         ('checkbox', 'Opción múltiple'),
-        ('select', 'Lista desplegable'),
-        ('rating', 'Calificación (1-5)'),
-        ('scale', 'Escala (1-10)'),
     ]
 
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='questions')
-    text = models.CharField(max_length=500)
+    text = models.CharField(max_length=50)
     question_type = models.CharField(max_length=20, choices=QUESTION_TYPES, default='text')
     required = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)

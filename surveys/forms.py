@@ -9,23 +9,36 @@ class SurveyForm(forms.ModelForm):
         fields = ['title', 'description', 'status', 'requires_login',
                   'allow_multiple_responses', 'start_date', 'end_date']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título de la encuesta'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Título de la encuesta',
+                'maxlength': '50'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'maxlength': '500'
+            }),
             'status': forms.Select(attrs={'class': 'form-select'}),
             'start_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
         }
-
 
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ['text', 'question_type', 'required', 'order', 'help_text']
         widgets = {
-            'text': forms.TextInput(attrs={'class': 'form-control'}),
-            'question_type': forms.Select(attrs={'class': 'form-select'}),
+            'text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Escribe tu pregunta'}),
+            'question_type': forms.Select(
+                choices=[
+                    ('text', 'Texto libre'),
+                    ('checkbox', 'Opción múltiple'),
+                ],
+                attrs={'class': 'form-select'}
+            ),
             'order': forms.NumberInput(attrs={'class': 'form-control'}),
-            'help_text': forms.TextInput(attrs={'class': 'form-control'}),
+            'help_text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Texto de ayuda opcional'}),
         }
 
 
@@ -41,7 +54,7 @@ class ChoiceForm(forms.ModelForm):
 
 ChoiceFormSet = inlineformset_factory(
     Question, Choice, form=ChoiceForm,
-    extra=3, can_delete=True
+    extra=0, can_delete=True
 )
 
 
